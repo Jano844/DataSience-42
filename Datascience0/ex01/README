@@ -1,0 +1,5 @@
+-- Tool to Show SQL Databases like Postgres:
+-- installation
+	sudo snap install dbeaver-ce
+-- open
+	dbeaver
