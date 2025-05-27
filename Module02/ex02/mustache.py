@@ -83,40 +83,56 @@ def shwo_box_plot(df):
 
 
 def average_basket_prise_per_user():
-    # Liste von der Summe aller Prese von User im Basket
+    # list of the sum of all prises of users with event_type cart
 
-    # Liste aller User mit event_type cart
+    # 1. list of all users with event_type cart
+    # 2. Group By User_ID
+    # 3. Sum up all Prises
+    # 4. repeat wiht remove from cart
 
-    # Group By User_ID
-
-    # Sum up all Prises
-
-
-
-
-
-    # Liste von von der Summe aller Prese aller entfernten Items von User
-
-    # Liste aller User mit event_type remove from cart
-
-    # Group By User_ID
-
-    # Sum up all Prises
+    df = load_data_of_user_id_and_prises("customers", "cart")
+    sum_user_carts = df.groupby(df["id"])["price"].sum()
+    df = load_data_of_user_id_and_prises("customers", "remove_from_cart")
+    sum_user_remove_from_carts = df.groupby(df["id"])["price"].sum()
 
 
+    # # Proof that the Data is bad or the 4 months are not all of the Data
+    # user_id = 622074126
+    # if user_id in sum_user_carts.index:
+    #     print(f" Sum of all his Cart {sum_user_carts.loc[user_id]}")
+    # else:
+    #     print("User hast no Cart")
+    # if user_id in sum_user_remove_from_carts.index:
+    #     print(f" Sum removed from Cart {sum_user_remove_from_carts.loc[user_id]}")
 
-
-    #--> for user in First List 
+    # 5. --> for user in First List 
     # if user in second list
     # prises [first list] - prises[second list]
 
-    pass
+    final_user_cart = {}
+
+    for user_id, total_price in sum_user_carts.items():
+        removed_price = 0
+        if user_id in sum_user_remove_from_carts.index:
+            removed_price = round(sum_user_remove_from_carts.loc[user_id], 2)
+            # if total_price - removed_price < 0: # Find all Useres with negative Cart value
+            #     print(user_id)
+        final_user_cart[user_id] = total_price - removed_price
+
+    # 6. plot the Data
+    prices = list(final_user_cart.values())
+    plt.boxplot(prices)
+    plt.title("Boxplot des durchschnittlichen Warenkorbwerts pro User")
+    plt.ylabel("Warenkorbwert (€)")
+    plt.show()
 
 
 def main():
-    df = load_data_collumn("customers", "customers.price", "prises")
-    show_statistics(df)
-    shwo_box_plot(df)
+    # df = load_data_collumn("customers", "customers.price", "prises")
+    # show_statistics(df)
+    # shwo_box_plot(df)
+    average_basket_prise_per_user()
+
     pass
 
 
